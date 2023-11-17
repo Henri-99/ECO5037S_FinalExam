@@ -14,6 +14,8 @@ Create an atomic transfer in which account A sends 5 Algos to account B and acco
 """
 from algosdk.v2client import algod
 from algosdk import account, transaction
+import json
+import os
 
 algod_address = "https://testnet-api.algonode.cloud"
 algod_token = ""
@@ -33,12 +35,8 @@ accounts = [
 	},
 ]
 
-account_info = algod_client.account_info(accounts[0]['address'])
-print(f"Account balance: {account_info.get('amount')} microAlgos")
-
-
 ISSUE_ASA = False
-ATOMIC_TRANSFER = True
+ATOMIC_TRANSFER = False
 
 sp = algod_client.suggested_params()
 
@@ -88,5 +86,77 @@ if ATOMIC_TRANSFER:
 	result = transaction.wait_for_confirmation(algod_client, tx_id, 4)
 	print(f"txID: {tx_id} confirmed in round: {result.get('confirmed-round', 0)}")
 
+def splash_screen():
+	# https://patorjk.com/software/taag/#p=display&f=Slant
+	logo = r"""
+    ___   __                  _         ______                      ____         
+   /   | / /_____  ____ ___  (_)____   /_  __/________ _____  _____/ __/__  _____
+  / /| |/ __/ __ \/ __ `__ \/ / ___/    / / / ___/ __ `/ __ \/ ___/ /_/ _ \/ ___/
+ / ___ / /_/ /_/ / / / / / / / /__     / / / /  / /_/ / / / (__  ) __/  __/ /    
+/_/  |_\__/\____/_/ /_/ /_/_/\___/    /_/ /_/   \__,_/_/ /_/____/_/  \___/_/     
 
+	"""
+	os.system('cls')
+	print(logo)
+
+
+
+menu = f"""1. View account balances
+2. Execute an atomic transaction
+3. Exit
+"""
+
+def output_balances():
+	for i, account in enumerate(accounts):
+		info = algod_client.account_info(account['address'])
+
+		print(f"\nAccount {"A" if i == 0 else "B"}")
+		print(f"Address: {account['address']}")
+		print(f"Balance: {info['amount'] / 1e6} Algos  ||  {info['assets'][0]['amount']} UCTZAR")
+		print(f"https://testnet.algoexplorer.io/address/{account['address']}")
+
+currency = [ None, "Algos", "UCTZAR" ]
+
+def atomic_transaction():
+	# Complete transaction and output AlgoExplorer link
+
+	accA_currency = int(input("Select Account A cryptocurrency\n1. Algos\n2. UCTZAR\n> "))
+	accA_amount = int(input(f"Enter amount of {currency[accA_currency]} to send\n> "))
+	
+	splash_screen()
+	accB_currency = int(input("Set Account B cryptocurrency\n1. Algos\n2. UCTZAR\n> "))
+	accB_amount = int(input(f"Enter amount of {currency[accB_currency]} to send\n> "))
+
+
+
+	# txn_1 = transaction.PaymentTxn(accounts[1]['address'], sp, accounts[0]['address'], 100)
+	# txn_2 = transaction.AssetTransferTxn(accounts[0]['address'], sp, accounts[1]['address'], asset_amount, index=asset_id)
+
+	# transaction.assign_group_id([txn_1, txn_2])
+	# stxn_1 = txn_1.sign(accounts[1]['private_key'])
+	# stxn_2 = txn_2.sign(accounts[0]['private_key'])
+	# signed_group = [stxn_1, stxn_2]
+	# tx_id = algod_client.send_transactions(signed_group)
+	# result = transaction.wait_for_confirmation(algod_client, tx_id, 4)
+	# print(f"txID: {tx_id} confirmed in round: {result.get('confirmed-round', 0)}")
+
+
+if __name__ == "__main__":
+	splash_screen()
+	option = ""
+
+	while (option != 3):
+		splash_screen()
+		print(menu)
+		option = int(input("> "))
+		splash_screen()
+
+		if option == 1:
+			output_balances()
+			input("\nENTER to return to main menu\n> ")
+		elif option == 2:
+			atomic_transaction()
+			input("\nENTER to return to main menu\n> ")
+
+		print()
 
