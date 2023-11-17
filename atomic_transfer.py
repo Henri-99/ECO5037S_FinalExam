@@ -67,7 +67,6 @@ if OPT_IN:
 
 ###############################################################################################
 
-menu = "1. View account balances\n2. Execute an atomic transaction\n3. Exit\n"
 currency = [ None, "Algos", "UCTZAR" ]
 
 def splash_screen():
@@ -84,8 +83,16 @@ def splash_screen():
 	os.system('cls')
 	print(logo)
 
+def main_menu():
+	# Outputs menu options and prompts user for option
+	splash_screen()
+	print("1. View account balances\n2. Execute an atomic transaction\n3. Exit\n")
+	option = int(input("> "))
+	return option
+
 def output_balances():
 	# Fetches and prints Algo + UCTZAR balances for both accounts
+	splash_screen()
 	for i, account in enumerate(accounts):
 		info = algod_client.account_info(account['address'])
 
@@ -131,17 +138,15 @@ def exec_atomic_transaction():
 if __name__ == "__main__":
 	if not DEBUG:
 		splash_screen()
-		option = ""
+		user_option = ""
 
-		while (option != 3):
-			splash_screen()
-			print(menu)
-			option = int(input("> "))
-			splash_screen()
+		while (user_option != 3):
+			user_option = main_menu()
 
-			if option == 1:
+			if user_option == 1:
 				output_balances()
 				input("\nPress ENTER to return to main menu\n> ")
-			elif option == 2:
+
+			elif user_option == 2:
 				exec_atomic_transaction()
 				input("\nPress ENTER to return to main menu\n> ")
