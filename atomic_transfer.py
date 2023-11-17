@@ -1,4 +1,6 @@
 """
+Question 5(ii)
+
 Using the Algorand SDK, write a Python command-line (CLI) based application that demonstrates the atomic transfer capability between 2 accounts A and B. 
 
 In the atomic transfer, demonstrate how account A sends 5 Algos to account B and account B sends 2 units of an Algorand Standard Asset (ASA) to account A.
@@ -11,7 +13,7 @@ Fund account A with Algos (you can use a testnet dispenser if you wish e.g. http
 Create an atomic transfer in which account A sends 5 Algos to account B and account B sends 2 units of UCTZAR ASA to account A. 
 """
 from algosdk.v2client import algod
-from algosdk import account
+from algosdk import account, transaction
 
 algod_address = "https://testnet-api.algonode.cloud"
 algod_token = ""
@@ -33,3 +35,25 @@ accounts = [
 
 account_info = algod_client.account_info(accounts[0]['address'])
 print(f"Account balance: {account_info.get('amount')} microAlgos")
+
+sp = algod_client.suggested_params()
+txn = transaction.AssetConfigTxn(
+    sender=accounts[1]['address'],
+    sp=sp,
+    unit_name="UCTZAR",
+    asset_name="UCTZAR",
+    total=10,
+	strict_empty_address_check=False
+)
+
+stxn = txn.sign(accounts[1]['private_key'])
+
+txid = algod_client.send_transaction(stxn)
+
+print(f"Sent asset create transaction with txid: {txid}")
+# Wait for the transaction to be confirmed
+results = transaction.wait_for_confirmation(algod_client, txid, 4)
+print(f"Result confirmed in round: {results['confirmed-round']}")
+
+created_asset = results["asset-index"]
+print(f"Asset ID created: {created_asset}")
