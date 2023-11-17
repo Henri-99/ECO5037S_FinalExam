@@ -156,7 +156,7 @@ def send_luft():
 	splash_screen()
 
 	# Executes the transaction
-	txn = transaction.PaymentTxn(accounts[sender-1]['address'], params, accounts[receiver-1]['address'], int(amount*10))
+	txn = transaction.AssetTransferTxn(accounts[sender-1]['address'], params, accounts[receiver-1]['address'], int(amount * 10), index=asset_id)
 	signed_tx = txn.sign(accounts[0]['private_key'])
 	tx_id = algod_client.send_transaction(signed_tx)
 	transaction.wait_for_confirmation(algod_client, tx_id, 4)
