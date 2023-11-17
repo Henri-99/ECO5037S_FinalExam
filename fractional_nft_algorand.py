@@ -73,10 +73,10 @@ if ISSUE_NFT:
 
 if OPT_IN:
 	# Allows accounts to use Luftballons
-	opt_in_txn = transaction.AssetTransferTxn(accounts[0]['address'], params, accounts[1]['address'], 0, index=asset_id)
-	opt_in_txn_2 = transaction.AssetTransferTxn(accounts[0]['address'], params, accounts[2]['address'], 0, index=asset_id)
+	opt_in_txn = transaction.AssetTransferTxn(accounts[1]['address'], params, accounts[1]['address'], 0, index=asset_id)
+	opt_in_txn_2 = transaction.AssetTransferTxn(accounts[2]['address'], params, accounts[2]['address'], 0, index=asset_id)
 	transaction.assign_group_id([opt_in_txn, opt_in_txn_2])
-	signed_group = [opt_in_txn.sign(accounts[0]['private_key']), opt_in_txn_2.sign(accounts[0]['private_key'])]
+	signed_group = [opt_in_txn.sign(accounts[1]['private_key']), opt_in_txn_2.sign(accounts[2]['private_key'])]
 
 	tx_id = algod_client.send_transactions(signed_group)
 	result = transaction.wait_for_confirmation(algod_client, tx_id, 4)
@@ -157,7 +157,7 @@ def send_luft():
 
 	# Executes the transaction
 	txn = transaction.AssetTransferTxn(accounts[sender-1]['address'], params, accounts[receiver-1]['address'], int(amount * 10), index=asset_id)
-	signed_tx = txn.sign(accounts[0]['private_key'])
+	signed_tx = txn.sign(accounts[sender-1]['private_key'])
 	tx_id = algod_client.send_transaction(signed_tx)
 	transaction.wait_for_confirmation(algod_client, tx_id, 4)
 	
