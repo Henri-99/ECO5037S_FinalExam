@@ -86,7 +86,7 @@ def splash_screen():
 def main_menu():
 	# Outputs menu options and prompts user for option
 	splash_screen()
-	print("1. View account balances\n2. Execute an atomic transaction\n3. Exit\n")
+	print("1. View account balances\n2. Execute an atomic transfer\n3. Exit\n")
 	option = int(input("> "))
 	return option
 
@@ -101,7 +101,7 @@ def output_balances():
 		print(f"Balance: {info['amount'] / 1e6} Algos  ||  {info['assets'][0]['amount']} UCTZAR")
 		print(f"https://testnet.algoexplorer.io/address/{account['address']}\n")
 
-def exec_atomic_transaction():
+def exec_atomic_transfer():
 	# Prompts user to enter type and amount of cryptocurrency for each wallet to send
 	splash_screen()
 	currency_a = int(input("Select cryptocurrency for User A to send to User B\n1. Algos\n2. UCTZAR\n\n> "))
@@ -148,5 +148,5 @@ if __name__ == "__main__":
 				input("\nPress ENTER to return to main menu\n> ")
 
 			elif user_option == 2:
-				exec_atomic_transaction()
+				exec_atomic_transfer()
 				input("\nPress ENTER to return to main menu\n> ")
